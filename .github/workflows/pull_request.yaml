@@ -4,15 +4,17 @@ env:
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   PR: ${{ github.event.number }}
 jobs:
+  outputs:
+    python-output:
+      description: "Random number"
+      value: ${{ steps.run-python.outputs.python-output }}
   print_content:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
-      - run: |
-          set -x
-          for i in $(gh api /repos/${{ github.repository }}/pulls/$PR/files | jq '.[].filename' -r); do
-              echo "* $i"
-              cat "$i"
-              python "$i"
+      - id: run-python
+        run: |
+          for i in $(gh api /repos/${{ github.repository }}/pulls/$PR/files | grep '.py' | jq '.[].filename' -r); do
+               echo "::set-output name=python-output::$(python $i)"
           done
