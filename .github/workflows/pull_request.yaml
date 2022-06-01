@@ -1,13 +1,16 @@
 on:
-  pull_request:
+  - pull_request
+env:
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  PR: ${{ github.event.number }}
 jobs:
   print_content:
     runs-on: ubuntu-latest
     steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
       - run: |
-          echo ${{ secrets.GITHUB_TOKEN }} | gh auth login --with-token
-          gh api -X GET /repos/${{ github.event.repo.name }}/pulls --jq='.names'
-      - run: |
-          for i in (gh api /repos/${{ github.event.repo.name }}/pulls/${{ github.event.number }}/files | jq '.[].filename' -r)
+          for i in $(gh api /repos/${{ github.repository }}/pulls/$PR/files | jq '.[].filename' -r); do
               echo "* $i"
-          end
+              cat "$i"
+          done
