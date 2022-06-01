@@ -6,13 +6,26 @@ env:
 jobs:
   print_content:
     runs-on: ubuntu-latest
-    outputs:
-      python-output: ${{ steps.run-python.outputs.python-output }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
       - id: run-python
         run: |
           for i in $(gh api /repos/${{ github.repository }}/pulls/$PR/files | grep '.py' | jq '.[].filename' -r); do
+               echo "::set-output name=python-filename::$i"
                echo "::set-output name=python-output::$(python $i)"
           done
+      - name: Add comment with Python execution output
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            Run:
+            ```shell
+            python ${{ steps.run-python.outputs.python-filename }}
+            ```
+
+            Output:
+            ```
+            ${{ steps.run-python.outputs.python-output }}
+            ```
