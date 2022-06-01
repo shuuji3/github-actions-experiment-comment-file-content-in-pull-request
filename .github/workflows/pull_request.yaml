@@ -10,10 +10,12 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
       - id: run-python
+        name: Run the first Python script and save the output
         run: |
-          for i in $(gh api /repos/${{ github.repository }}/pulls/$PR/files | grep '.py' | jq '.[].filename' -r); do
+          for i in $(gh api /repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files | grep '.py' | jq '.[].filename' -r); do
                echo "::set-output name=python-filename::$i"
                echo "::set-output name=python-output::$(python $i)"
+               break
           done
       - name: Add comment with Python execution output
         uses: peter-evans/create-or-update-comment@v2
