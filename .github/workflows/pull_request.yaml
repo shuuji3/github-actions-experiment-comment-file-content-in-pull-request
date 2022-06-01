@@ -4,7 +4,7 @@ env:
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   PR: ${{ github.event.number }}
 jobs:
-  print_content:
+  run_python:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
