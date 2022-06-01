@@ -22,12 +22,14 @@ jobs:
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
-            Run:
+            :snake: I've just executed your Python script! Here is the result:
+
+            **Command:**
             ```shell
             python ${{ steps.run-python.outputs.python-filename }}
             ```
 
-            Output:
+            **Output:**
             ```
             ${{ steps.run-python.outputs.python-output }}
             ```
