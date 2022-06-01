@@ -1,0 +1,13 @@
+on:
+  pull_request:
+jobs:
+  print_content:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | gh auth login --with-token
+          gh api -X GET /repos/${{ github.event.repo.name }}/pulls --jq='.names'
+      - run: |
+          for i in (gh api /repos/${{ github.event.repo.name }}/pulls/${{ github.event.number }}/files | jq '.[].filename' -r)
+              echo "* $i"
+          end
